@@ -1,5 +1,6 @@
 use ogm::{models::Movie, Connection};
-use hello_macro::HelloMacro;
+//use hello_macro::HelloMacro;
+use ogm::models::HelloMacro;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -12,5 +12,5 @@ tokio = "1.5.0"
 tokio-util = { version = "0.6.6", features = ["compat"] }
 field_types = "*"
 typename = "0.1.2"
-hello_macro = { path = "../hello_macro" }
 hello_macro_derive = { path = "../hello_macro_derive" }
+async-trait = "0.1.50"

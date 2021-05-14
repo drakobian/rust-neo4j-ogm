@@ -13,19 +13,28 @@ pub fn hello_macro_derive(input: TokenStream) -> TokenStream {
 fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
+        #[async_trait(?Send)]
         impl HelloMacro for #name {
             fn hello_macro() {
                 println!("Hello, Macro! My name is {}!", stringify!(#name));
             }
 
-            fn test_import_stuff(node: Node) -> Option<#name> {
+            fn from_node(node: Node) -> Option<Entity> {
                 Some(
-                        #name {
+                        Entity::#name(#name {
                             title : String::from("title"),
                             tagline : String::from("tagline"),
                             released : 1992
-                        }
+                        })
                     )
+            }
+
+            async fn find_one(conn: &Connection) -> Result<Entity, Box<dyn std::error::Error>> {
+                let pull_meta = Metadata::from_iter(vec![("n", 1)]);
+                // todo: figure out how to generate this query string
+                let (_response, records) = conn.run("MATCH (n:Movie) RETURN n;", pull_meta).await?;
+                let node = Node::try_from(records[0].fields()[0].clone())?;
+                Ok(#name::from_node(node).unwrap())
             }
         }
     };

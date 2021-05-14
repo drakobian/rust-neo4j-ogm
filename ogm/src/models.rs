@@ -1,14 +1,3 @@
-use hello_macro::HelloMacro;
-use hello_macro_derive::HelloMacro;
-
-#[derive(HelloMacro)]
-#[derive(Debug)]
-pub struct Movie {
-    pub tagline: String,
-    pub title: String,
-    pub released: i32,
-}
-
 use bolt_client::*;
 use bolt_proto::{value::*};
 
@@ -20,17 +9,44 @@ use std::convert::TryFrom;
 
 use super::Connection;
 
-impl Movie {
+//use hello_macro::HelloMacro;
+use hello_macro_derive::HelloMacro;
+use async_trait::async_trait;
+
+// downside is this enum will have to be updated with every new struct deriving the macro soooooo. 
+// improvements to be made :)
+#[derive(Debug)]
+pub enum Entity {
+    Movie(Movie)
+}
+
+#[async_trait(?Send)]
+pub trait HelloMacro {
+    fn hello_macro();
+    async fn find_one(conn: &Connection) -> Result<Entity, Box<dyn std::error::Error>>;
+    fn from_node(node: Node) -> Option<Entity>;
+}
+
+#[derive(HelloMacro)]
+#[derive(Debug)]
+pub struct Movie {
+    pub tagline: String,
+    pub title: String,
+    pub released: i32,
+}
+
+
+/*impl Movie {
     // todo: convert this to just a 'find' that takes an 'n' for number, and returns a Vec<Movie> 
     pub async fn find_one(conn: &Connection) -> Result<Movie, Box<dyn std::error::Error>> {
         let pull_meta = Metadata::from_iter(vec![("n", 1)]);
         let (_response, records) = conn.run("MATCH (n:Movie) RETURN n;", pull_meta).await?;
         let node = Node::try_from(records[0].fields()[0].clone())?;
-        /*Ok(Movie {
+        Ok(Movie {
             title : String::try_from(record.properties().get("title").unwrap().clone())?,
             tagline : String::try_from(record.properties().get("tagline").unwrap().clone())?,
             released : i32::try_from(record.properties().get("released").unwrap().clone())?,
-        })*/
+        })
         Ok(Movie::from_node(node).unwrap())
     }
 
@@ -48,7 +64,7 @@ impl Movie {
         //Some(Movie { title, tagline, released })
     }
 }
-/*impl Movie {
+impl Movie {
     pub async fn find_one(mut client:  -> Result<Movie, Box<dyn std::error::Error>>  { 
         let pull_meta = Metadata::from_iter(vec![("n", 1)]);
 
