@@ -10,7 +10,7 @@ use std::convert::TryFrom;
 use super::Connection;
 
 //use hello_macro::HelloMacro;
-use hello_macro_derive::HelloMacro;
+use hello_macro_derive::Queryable;
 use async_trait::async_trait;
 
 // downside is this enum will have to be updated with every new struct deriving the macro soooooo. 
@@ -21,13 +21,12 @@ pub enum Entity {
 }
 
 #[async_trait(?Send)]
-pub trait HelloMacro {
-    fn hello_macro();
-    async fn find_one(conn: &Connection) -> Result<Entity, Box<dyn std::error::Error>>;
+pub trait Queryable {
+    async fn find(conn: &Connection, n: i32) -> Result<Vec<Entity>, Box<dyn std::error::Error>>;
     fn from_node(node: Node) -> Option<Entity>;
 }
 
-#[derive(HelloMacro)]
+#[derive(Queryable)]
 #[derive(Debug)]
 pub struct Movie {
     pub tagline: String,

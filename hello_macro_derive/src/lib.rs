@@ -4,37 +4,39 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn;
 
-#[proc_macro_derive(HelloMacro)]
-pub fn hello_macro_derive(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(Queryable)]
+pub fn queryable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
-    impl_hello_macro(&ast)
+    impl_queryable(&ast)
 }
 
-fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
+fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         #[async_trait(?Send)]
-        impl HelloMacro for #name {
-            fn hello_macro() {
-                println!("Hello, Macro! My name is {}!", stringify!(#name));
-            }
-
+        impl Queryable for #name {
             fn from_node(node: Node) -> Option<Entity> {
                 Some(
                         Entity::#name(#name {
-                            title : String::from("title"),
-                            tagline : String::from("tagline"),
+                            title : String::from("Gone With the Wind"),
+                            tagline : String::from("This time......it's personal"),
                             released : 1992
                         })
                     )
             }
 
-            async fn find_one(conn: &Connection) -> Result<Entity, Box<dyn std::error::Error>> {
-                let pull_meta = Metadata::from_iter(vec![("n", 1)]);
+            async fn find(conn: &Connection, n: i32) -> Result<Vec<Entity>, Box<dyn std::error::Error>> {
+                let pull_meta = Metadata::from_iter(vec![("n", n)]);
                 // todo: figure out how to generate this query string
-                let (_response, records) = conn.run("MATCH (n:Movie) RETURN n;", pull_meta).await?;
-                let node = Node::try_from(records[0].fields()[0].clone())?;
-                Ok(#name::from_node(node).unwrap())
+                //let query = format!("MATCH (n:{}) RETURN N;", stringify!(#name).to_string()).to_string();
+                let query = format!("MATCH (n:{}) RETURN n;", stringify!(#name));  
+                let (_response, records) = conn.run(&query, pull_meta).await?;
+                let mut vec = Vec::new();
+                for record in records {
+                    let node = Node::try_from(record.fields()[0].clone())?;
+                    vec.push(#name::from_node(node).unwrap());
+                }
+                Ok(vec)
             }
         }
     };
