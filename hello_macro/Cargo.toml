@@ -1,5 +1,5 @@
 [package]
-name = "runner"
+name = "hello_macro"
 version = "0.1.0"
 authors = ["drakobian <drake.bennion@gmail.com>"]
 edition = "2018"
@@ -9,7 +9,4 @@ edition = "2018"
 [dependencies]
 
 ogm = { path = "../ogm" }
-
-hello_macro = { path = "../hello_macro" }
-
-tokio = { version = "1.5.0", features=["full"] }
+bolt-client = { version = "0.9.1", features = ["tokio-stream"] }

@@ -3,4 +3,6 @@
 members = [
     "runner",
     "ogm",
+    "hello_macro",
+    "hello_macro_derive",
 ]
