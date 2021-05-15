@@ -17,7 +17,8 @@ use async_trait::async_trait;
 // improvements to be made :)
 #[derive(Debug)]
 pub enum Entity {
-    Movie(Movie)
+    Movie(Movie),
+    Person(Person)
 }
 
 #[async_trait(?Send)]
@@ -32,6 +33,13 @@ pub struct Movie {
     pub tagline: String,
     pub title: String,
     pub released: i32,
+}
+
+#[derive(Queryable)]
+#[derive(Debug)]
+pub struct Person {
+    pub name: String,
+    pub born: i32,
 }
 
 
