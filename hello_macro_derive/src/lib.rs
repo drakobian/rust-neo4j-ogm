@@ -1,11 +1,10 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use quote::{quote, quote_spanned};
+use quote::{quote};
 use syn;
 use syn::{Data, Fields};
 
-use syn::spanned::Spanned;
 #[proc_macro_derive(Queryable)]
 pub fn queryable_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
@@ -40,18 +39,17 @@ fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
             }
             Data::Enum(_) | Data::Union(_) => unimplemented!(),
         };
-    //}
-    //let struct_fields = get_fields(&ast.data);
-    //println!("{}", struct_fields);
-
+    
     let gen = quote! {
         #[async_trait(?Send)]
         impl Queryable for #name {
-            fn from_node(node: Node) -> Option<Entity> {
-                Some(Entity::#name(#name { #struct_fields }))
+            type Entity = #name;
+
+            fn from_node(node: Node) -> Option<Self::Entity> {
+                Some(#name { #struct_fields })
             }
 
-            async fn find(conn: &Connection, n: i32) -> Result<Vec<Entity>, Box<dyn std::error::Error>> {
+            async fn find(conn: &Connection, n: i32) -> Result<Vec<Self::Entity>, Box<dyn std::error::Error>> {
                 let pull_meta = Metadata::from_iter(vec![("n", n)]); 
                 let query = format!("MATCH (n:{}) RETURN n;", stringify!(#name));  
                 let (_response, records) = conn.run(&query, pull_meta).await?;

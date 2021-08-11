@@ -1,7 +1,7 @@
 use bolt_client::*;
 use bolt_proto::{value::*};
 
-use ogm::{models::Movie, Connection};
+use ogm::{models::Movie};
 
 pub trait HelloMacro {
     fn hello_macro();
