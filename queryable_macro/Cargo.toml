@@ -1,5 +1,5 @@
 [package]
-name = "hello_macro_derive"
+name = "queryable_macro"
 version = "0.1.0"
 authors = ["drakobian <drake.bennion@gmail.com>"]
 edition = "2018"

@@ -3,5 +3,5 @@
 members = [
     "runner",
     "ogm",
-    "hello_macro_derive",
+    "queryable_macro",
 ]

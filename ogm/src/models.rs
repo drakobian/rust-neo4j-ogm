@@ -6,7 +6,7 @@ use std::convert::TryFrom;
 
 use super::Connection;
 
-use hello_macro_derive::Queryable;
+use queryable_macro::Queryable;
 use async_trait::async_trait;
 
 #[async_trait(?Send)]
