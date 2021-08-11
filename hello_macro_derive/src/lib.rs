@@ -15,7 +15,7 @@ pub fn queryable_derive(input: TokenStream) -> TokenStream {
 
 fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
-    let struct_fields: TokenStream = 
+    let struct_fields = 
     //fn get_fields(data: &syn::Data) {
         //match *data {
         match ast.data {
@@ -33,7 +33,7 @@ fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
                         let gen = quote! {
                             #(#recurse)*
                         };
-                        gen.into()
+                        gen
                     }
                     Fields::Unnamed(_) | Fields::Unit => unimplemented!(),
                 }
@@ -42,13 +42,13 @@ fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
         };
     //}
     //let struct_fields = get_fields(&ast.data);
-    println!("{}", struct_fields);
+    //println!("{}", struct_fields);
 
     let gen = quote! {
         #[async_trait(?Send)]
         impl Queryable for #name {
             fn from_node(node: Node) -> Option<Entity> {
-                Some(Entity::#name(#name { }))
+                Some(Entity::#name(#name { #struct_fields }))
             }
 
             async fn find(conn: &Connection, n: i32) -> Result<Vec<Entity>, Box<dyn std::error::Error>> {
