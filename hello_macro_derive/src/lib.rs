@@ -15,8 +15,6 @@ pub fn queryable_derive(input: TokenStream) -> TokenStream {
 fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let struct_fields = 
-    //fn get_fields(data: &syn::Data) {
-        //match *data {
         match ast.data {
             Data::Struct(ref data) => {
                 match data.fields {
@@ -64,12 +62,4 @@ fn impl_queryable(ast: &syn::DeriveInput) -> TokenStream {
     };
     
     gen.into()
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
 }
