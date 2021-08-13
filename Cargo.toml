@@ -5,3 +5,7 @@ members = [
     "ogm",
     "queryable_macro",
 ]
+
+exclude = [
+    "migrator",
+]

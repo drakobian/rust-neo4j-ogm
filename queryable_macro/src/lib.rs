@@ -53,12 +53,13 @@ fn impl_qnode(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             async fn find(conn: &Connection, n: i32) -> Result<Vec<Self::Entity>, Box<dyn std::error::Error>> {
-                let pull_meta = Metadata::from_iter(vec![("n", n)]); 
+                //let pull_meta = Metadata::from_iter(vec![("n", n)]); 
                 let query = format!("MATCH (n:{}) RETURN n;", stringify!(#name));  
-                let (_response, records) = conn.run(&query, pull_meta).await?;
+                let (_response, records) = conn.run(&query).await?;
                 let mut vec = Vec::new();
                 for record in records {
                     let node = Node::try_from(record.fields()[0].clone())?;
+                    //println!("{:?}", node);
                     vec.push(#name::from_node(node).unwrap());
                 }
                 Ok(vec)
@@ -105,13 +106,13 @@ fn impl_qrel(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             async fn find(conn: &Connection, n: i32) -> Result<Vec<Self::Entity>, Box<dyn std::error::Error>> {
-                let pull_meta = Metadata::from_iter(vec![("n", n)]); 
+                //let pull_meta = Metadata::from_iter(vec![("n", n)]); 
                 let query = format!("MATCH ()-[r:{}]-() RETURN r;", stringify!(#name));  
-                let (_response, records) = conn.run(&query, pull_meta).await?;
+                let (_response, records) = conn.run(&query).await?;
                 let mut vec = Vec::new();
                 for record in records {
                     let rel = Relationship::try_from(record.fields()[0].clone())?;
-                    println!("{:?}", rel);
+                    //println!("{:?}", rel);
                     vec.push(#name::from_rel(rel).unwrap());
                 }
                 Ok(vec)

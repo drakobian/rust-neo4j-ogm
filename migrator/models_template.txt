@@ -31,18 +31,3 @@ pub struct ACTED_IN {
     pub roles: Vec::<String>
 }
 
-#[derive(QNode)]
-#[derive(Debug)]
-pub struct Movie {
-  pub title: String,
-  pub tagline: String,
-  pub released: i32,
-}
-
-#[derive(QNode)]
-#[derive(Debug)]
-pub struct Person {
-  pub name: String,
-  pub born: i32,
-}
-

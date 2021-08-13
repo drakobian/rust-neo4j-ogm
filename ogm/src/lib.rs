@@ -1,9 +1,10 @@
 use std::env;
 use std::convert::TryFrom;
+use std::convert::TryInto;
 use std::iter::FromIterator;
 
 use bolt_client::*;
-use bolt_proto::{message::*, version::*, Message, message::Record};
+use bolt_proto::{message::*, version::*, Message, message::Record, Value};
 
 use tokio::io::BufStream;
 use tokio_util::compat::*;
@@ -18,10 +19,11 @@ pub struct Connection {
 }
 
 impl Connection {
-    pub async fn run(&self, query: &str, meta: Metadata) -> Result<(Message, Vec<Record>), Box<dyn std::error::Error>> {
+    pub async fn run(&self, query: &str) -> Result<(Message, Vec<Record>), Box<dyn std::error::Error>> {
         self.client.borrow_mut().run_with_metadata(query, None, None).await?;
+        let meta = Metadata::from_iter(vec![("n", 3)]);
         let (response, records) = self.client.borrow_mut().pull(Some(meta.clone())).await?;
-        
+
         // is it a bad idea to do this every time??
         self.client.borrow_mut().reset().await?;
 
